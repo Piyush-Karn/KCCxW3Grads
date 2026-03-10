@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h2>Form Example</h2>
+
+    <form id="form">
+
+        <input type="text" id="name" placeholder="Enter name">
+        <input type="email" id="email" placeholder="Enter email">
+        <input type="password" id="password" placeholder="Enter password">
+
+        <button type="submit">Submit</button>
+
+    </form>
+</body>
+
+<script>
+    const form = document.querySelector("#form")
+    const nameInput = document.querySelector("#name")
+    const emailInput = document.querySelector("#email")
+    const passwordInput = document.querySelector("#password")
+
+
+    form.addEventListener("submit", function (e) {
+
+        e.preventDefault()
+
+        const name = nameInput.value
+        const email = emailInput.value
+        const password = passwordInput.value
+
+        if (name === "" || email === "" || password === "") {
+            console.log("Please fill in all fields");
+            return
+        }
+        if (!email.includes("@")) {
+            console.log("Please enter a valid email");
+            return
+        }
+        if (password.length < 8) {
+            console.log("Password must be at least 8 characters");
+            return
+        }
+        if(password.length >= 10) {
+            console.log("Password must be less than 10 characters");
+            return
+        }
+        // /^(?=.*[A-Z]).{8,9}$/
+        if(password === password.toLowerCase()) {
+            console.log("Password must contain at least one Uppercase letter");
+            return
+        }
+        console.log("Name:", name)
+        console.log("Email:", email)
+
+    })
+</script>
+</html>

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern To-Do</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Modern CSS Reset & Variable Definitions */
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-gradient: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --text-placeholder: #94a3b8;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 4rem 1rem;
+            box-sizing: border-box;
+        }
+
+        /* Container Styling */
+        .todo-container {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            width: 100%;
+            max-width: 420px;
+            transition: transform 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        h2 { 
+            margin: 0; 
+            font-weight: 700; 
+            font-size: 1.75rem; 
+            letter-spacing: -0.025em;
+        }
+
+        .task-count {
+            background: #f1f5f9;
+            color: var(--text-muted);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Input Group Layout */
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 16px 20px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s ease;
+            background-color: #f8fafc;
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--text-placeholder);
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .add-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            width: 54px;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .add-btn svg {
+            width: 24px;
+            height: 24px;
+            transition: transform 0.2s ease;
+        }
+
+        .add-btn:hover { 
+            background-color: var(--primary-hover); 
+            transform: translateY(-1px);
+        }
+        
+        .add-btn:active { 
+            transform: translateY(1px); 
+        }
+
+        .add-btn:hover svg {
+            transform: rotate(90deg);
+        }
+
+        /* List Styling */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .task-item {
+            padding: 16px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        .task-item:hover { 
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.9); }
+        }
+
+        /* Custom Checkbox */
+        .checkbox-container {
+            display: block;
+            position: relative;
+            cursor: pointer;
+            font-size: 22px;
+            user-select: none;
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 24px;
+            width: 24px;
+            background-color: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .task-item:hover .checkmark {
+            border-color: var(--primary);
+        }
+
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .checkmark svg {
+            width: 14px;
+            height: 14px;
+            color: white;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .checkbox-container input:checked ~ .checkmark svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Task Text */
+        .task-text {
+            flex: 1;
+            font-size: 1rem;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+            word-break: break-word;
+            line-height: 1.4;
+        }
+
+        .task-item.completed .task-text {
+            color: var(--text-placeholder);
+            text-decoration: line-through;
+        }
+
+        .task-item.completed {
+            background-color: #f8fafc;
+            border-color: transparent;
+        }
+
+        /* Delete Button */
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-placeholder);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            opacity: 0;
+        }
+
+        .task-item:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .delete-btn:hover {
+            background-color: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .delete-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-muted);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
+
+        .empty-state.visible {
+            display: flex;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 480px) {
+            .todo-container {
+                padding: 1.5rem;
+                border-radius: 20px;
+            }
+            .delete-btn {
+                opacity: 1; /* Always show delete on mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="todo-container">
+        <div class="header">
+            <h2>My Tasks</h2>
+            <span class="task-count" id="task-count">0 tasks</span>
+        </div>
+        
+        <div class="input-group">
+            <input type="text" id="input-id" placeholder="What needs to be done?" autocomplete="off">
+            <button id="add-btn" class="add-btn" type="button" aria-label="Add task">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+
+        <ul id="list-id"></ul>
+
+        <div id="empty-state" class="empty-state visible">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 5H7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2V7a2 2 0 0 0 -2 -2h-2"></path>
+                <rect x="9" y="3" width="6" height="4" rx="2"></rect>
+                <path d="M9 14l2 2l4 -4"></path>
+            </svg>
+            <p>You're all caught up!</p>
+        </div>
+    </div>
+
+    <script>
+        const taskInput = document.querySelector('#input-id');
+        const addBtn = document.querySelector('#add-btn');
+        const list = document.querySelector('#list-id');
+        const emptyState = document.querySelector('#empty-state');
+        const taskCountDisplay = document.querySelector('#task-count');
+
+        // Update task count and empty state UI
+        function updateUI() {
+            const tasks = list.querySelectorAll('.task-item');
+            const count = tasks.length;
+            
+            taskCountDisplay.textContent = `${count} task${count !== 1 ? 's' : ''}`;
+            
+            if (count === 0) {
+                emptyState.classList.add('visible');
+            } else {
+                emptyState.classList.remove('visible');
+            }
+        }
+
+        // Function to create and add task
+        function addTask() {
+            const text = taskInput.value.trim();
+            if (text === "") return;
+            
+            const li = document.createElement('li');
+            li.className = 'task-item';
+
+            // Checkbox Container
+            const label = document.createElement('label');
+            label.className = 'checkbox-container';
+            label.innerHTML = `
+                <input type="checkbox" class="task-check">
+                <span class="checkmark">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </span>
+            `;
+
+            // Text Span (Using textContent prevents XSS injection)
+            const span = document.createElement('span');
+            span.className = 'task-text';
+            span.textContent = text;
+
+            // Delete Button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.setAttribute('aria-label', 'Delete task');
+            deleteBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+            `;
+
+            // Append elements
+            li.appendChild(label);
+            li.appendChild(span);
+            li.appendChild(deleteBtn);
+            list.appendChild(li);
+
+            taskInput.value = ""; // Clear input
+            taskInput.focus();    // Keep focus for continuous typing
+            updateUI();
+        }
+
+        // Event Listeners
+        addBtn.addEventListener('click', addTask);
+
+        taskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTask();
+        });
+        
+        // Use event delegation for list interactions (Checking & Deleting)
+        list.addEventListener("click", function (e) {
+            const listItem = e.target.closest('.task-item');
+            if (!listItem) return;
+
+            // Handle Delete
+            if (e.target.closest('.delete-btn')) {
+                listItem.style.animation = 'slideOut 0.2s ease forwards';
+                setTimeout(() => {
+                    listItem.remove();
+                    updateUI();
+                }, 200);
+                return;
+            }
+
+            // Handle Checkbox toggle
+            const checkbox = listItem.querySelector('.task-check');
+            // If the user clicked the text (not the actual checkbox box), toggle the checkbox manually
+            if (!e.target.closest('.checkbox-container')) {
+                checkbox.checked = !checkbox.checked;
+            }
+
+            if (checkbox.checked) {
+                listItem.classList.add('completed');
+            } else {
+                listItem.classList.remove('completed');
+            }
+        });
+
+        // Handle direct change events on the checkboxes
+        list.addEventListener("change", function(e) {
+            if (e.target.classList.contains('task-check')) {
+                const listItem = e.target.closest('.task-item');
+                if (e.target.checked) {
+                    listItem.classList.add('completed');
+                } else {
+                    listItem.classList.remove('completed');
+                }
+            }
+        });
+
+        // Initial UI update
+        updateUI();
+    </script>
+</body>
+</html>
